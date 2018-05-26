@@ -1,6 +1,7 @@
+#install package: python-telgram-bot
 from telegram.ext import (Updater, CommandHandler)
 import logging, time, threading
-from RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 '''
 add function to log events
