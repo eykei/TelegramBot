@@ -7,10 +7,11 @@ print(bot.get_me())
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 import logging, time, threading
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 apiToken='601155106:AAGVS0HLVhSpQeFx42USd8js7KkITcJNJiI'
 exit=False
+sensorPin=8
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,13 +19,11 @@ logger = logging.getLogger(__name__)
 
 def GPIOMonitor(update):
     while True:
-        #if GPIO.input(sensorPin):
-            #update.message.reply_text('Door is Open!')
+        if GPIO.input(sensorPin):
+            update.message.reply_text('Door is Open!')
         if exit == True:
-            #GPIO.cleanup()
+            GPIO.cleanup()
             break
-
-        update.message.reply_text(time.time())
         time.sleep(1)
 
 def start(bot, update): #function for handling the /start command
