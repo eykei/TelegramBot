@@ -11,8 +11,8 @@ import RPi.GPIO as GPIO
 
 apiToken='601155106:AAGVS0HLVhSpQeFx42USd8js7KkITcJNJiI'
 exit=False
-sensorPin=8
-GPIO.setmode(GPIO.BCM)
+sensorPin=7
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 def GPIOMonitor(update):
     while True:
+        print(GPIO.input(sensorPin))
         if GPIO.input(sensorPin):
             update.message.reply_text('Door is Open!')
         if exit == True:
