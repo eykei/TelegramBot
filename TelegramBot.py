@@ -1,17 +1,16 @@
 '''
-#testing
-import telegram
-bot = telegram.Bot(token=apiToken) #API token provided by Botfather
-print(bot.get_me())
+add config file
 '''
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-import logging, time, threading
+import logging, time, threading, datetime
 import RPi.GPIO as GPIO
 
 apiToken='601155106:AAGVS0HLVhSpQeFx42USd8js7KkITcJNJiI'
 exit=False
 sensorPin=7
+event_log=[]
+
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
@@ -20,14 +19,43 @@ logger = logging.getLogger(__name__)
 
 
 def GPIOMonitor(update):
+    doorOpen=GPIO.input(sensorPin)
     while True:
         print(GPIO.input(sensorPin))
+
         if GPIO.input(sensorPin):
-            update.message.reply_text('Door is Open!')
+            if not doorOpen:
+                event='Doors is Open!'
+                update.message.reply_text(event)
+                log_event(event)
+                doorOpen=True
+        else:
+            if doorOpen:
+                event='Door is Closed.'
+                update.message.reply_text(event)
+                log_event(event)
+                doorOpen=False
+
         if exit == True:
             GPIO.cleanup()
             break
+
         time.sleep(1)
+
+def log_event(event):
+    dt=datetime.datetime.now()
+    l='%d/%d/%d %d:%d:%d %s' % (dt.month, dt.day, dt.year, dt.hour, dt.minute, dt.second, event)
+    if len(event_log)>=30:
+        del(event_log[0])
+        event_log.append(l)
+    else:
+        event_log.append(l)
+
+def log(bot,update):
+    update.message.reply_text('OK, printing log...')
+    time.sleep(1)
+    for event in event_log:
+        update.message.reply_text(event)
 
 def start(bot, update): #function for handling the /start command
     update.message.reply_text('OK, begin monitoring...')
@@ -58,6 +86,10 @@ if __name__ == '__main__':
     main()
 
 '''
+#testing
+import telegram
+bot = telegram.Bot(token=apiToken) #API token provided by Botfather
+print(bot.get_me())
 #Example functions
 def echo(bot, update): #e.g. user: hello bot: hello
     bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
