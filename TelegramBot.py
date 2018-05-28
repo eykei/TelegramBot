@@ -1,5 +1,4 @@
 '''
-add logging function
 add config file
 '''
 
@@ -12,14 +11,15 @@ exit=False
 sensorPin=7
 event_log=[]
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def GPIOMonitor(update):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
     doorOpen=GPIO.input(sensorPin)
     while True:
         print(GPIO.input(sensorPin))
@@ -58,12 +58,17 @@ def log(bot,update):
     for event in event_log:
         update.message.reply_text(event)
 
+def clear(bot,update):
+    global event_log
+    event_log=[]
+
 def start(bot, update): #function for handling the /start command
     update.message.reply_text('OK, begin monitoring...')
     t=threading.Thread(target=GPIOMonitor, args=[update])
     t.start()
     global exit
     set_exit(False)
+
 
 def end(bot,update):
     update.message.reply_text('OK, end monitoring...')
@@ -78,6 +83,8 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start)) #register with dispatcher
     dispatcher.add_handler(CommandHandler("end", end))
+    dispatcher.add_handler(CommandHandler("log", log))
+    disatcher.add_handler(CommandHandler("log", log))
 
     updater.start_polling()
 
