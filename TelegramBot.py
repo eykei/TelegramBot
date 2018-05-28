@@ -84,7 +84,7 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start)) #register with dispatcher
     dispatcher.add_handler(CommandHandler("end", end))
     dispatcher.add_handler(CommandHandler("log", log))
-    disatcher.add_handler(CommandHandler("log", log))
+    dispatcher.add_handler(CommandHandler("log", log))
 
     updater.start_polling()
 
