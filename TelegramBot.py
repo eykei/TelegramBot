@@ -3,13 +3,20 @@ add config file
 '''
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-import logging, time, threading, datetime
+import logging, time, threading, datetime, configparser
 import RPi.GPIO as GPIO
 
-apiToken='601155106:AAGVS0HLVhSpQeFx42USd8js7KkITcJNJiI'
-exit=False
-sensorPin=7
+config=configparser.ConfigParser()
+config.read('config.ini')
+
+apiToken=config['settings']['apiToken']
+sensorPin=config['settings']['sensorPin']
+logLength=config['settings']['logLength']
+
+print(apiToken)
+
 event_log=[]
+exit=False
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
@@ -25,7 +32,7 @@ def GPIOMonitor(update):
 
         if GPIO.input(sensorPin):
             if not doorOpen:
-                event='Doors is Open!'
+                event='Door is Open!'
                 update.message.reply_text(event)
                 log_event(event)
                 doorOpen=True
@@ -45,7 +52,7 @@ def GPIOMonitor(update):
 def log_event(event):
     dt=datetime.datetime.now()
     l='%d/%d/%d %d:%d:%d %s' % (dt.month, dt.day, dt.year, dt.hour, dt.minute, dt.second, event)
-    if len(event_log)>=30:
+    if len(event_log)>=logLength:
         del(event_log[0])
         event_log.append(l)
     else:
@@ -77,6 +84,7 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start)) #register with dispatcher
     dispatcher.add_handler(CommandHandler("end", end))
+    dispatcher.add_handler(CommandHandler("log",log))
 
     updater.start_polling()
 
