@@ -10,22 +10,20 @@ config=configparser.ConfigParser()
 config.read('config.ini')
 
 apiToken=config['settings']['apiToken']
-sensorPin=config['settings']['sensorPin']
-logLength=config['settings']['logLength']
+sensorPin=int(config['settings']['sensorPin'])
+logLength=int(config['settings']['logLength'])
 
-print(apiToken)
 
 event_log=[]
 exit=False
-
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def GPIOMonitor(update):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
     doorOpen=GPIO.input(sensorPin)
     while True:
         print(GPIO.input(sensorPin))
