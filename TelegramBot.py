@@ -57,8 +57,7 @@ def status(bot, update):
 def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
     pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
-    l=pst_now.strftime('%B %d, %Y %H:%M:%S')
-
+    l=event+pst_now.strftime(' %B %d, %Y %H:%M:%S')
     if len(event_log)>=logLength:
         del(event_log[0])
         event_log.append(l)
