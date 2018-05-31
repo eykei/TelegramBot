@@ -24,7 +24,7 @@ def GPIOMonitor(update):
     GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
     doorOpen=GPIO.input(sensorPin)
     while True:
-        print(GPIO.input(sensorPin))
+        #print(GPIO.input(sensorPin))
 
         if GPIO.input(sensorPin):
             if not doorOpen:
@@ -94,6 +94,7 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start)) #register with dispatcher
     dispatcher.add_handler(CommandHandler("end", end))
     dispatcher.add_handler(CommandHandler("log",log))
+    dispatcher.add_handler(CommandHandler('status', status))
 
     updater.start_polling()
 
