@@ -1,9 +1,7 @@
-'''
-add config file
-'''
+
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-import logging, time, threading, datetime, configparser
+import logging, time, threading, datetime, configparser, pytz
 import RPi.GPIO as GPIO
 
 config=configparser.ConfigParser()
@@ -47,9 +45,22 @@ def GPIOMonitor(update):
 
         time.sleep(1)
 
+def status(bot, update):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+    doorOpen = GPIO.input(sensorPin)
+    if doorOpen:
+        update.message.reply_text('Door is currently open.')
+    else:
+        update.message.reply_text('Door is currently closed.')
+    GPIO.cleanup()
+
+
 def log_event(event):
-    dt=datetime.datetime.now()
-    l='%d/%d/%d %d:%d:%d %s' % (dt.month, dt.day, dt.year, dt.hour, dt.minute, dt.second, event)
+    utc_now = pytz.utc.localize(datetime.datetime.utcnow())
+    pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
+    l=pst_now.strftime('%B %d, %Y %H:%M:%S')
+
     if len(event_log)>=logLength:
         del(event_log[0])
         event_log.append(l)
