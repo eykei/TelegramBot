@@ -46,14 +46,12 @@ def GPIOMonitor(update):
         time.sleep(1)
 
 def status(bot, update):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+
     doorOpen = GPIO.input(sensorPin)
     if doorOpen:
         update.message.reply_text('Door is currently open.')
     else:
         update.message.reply_text('Door is currently closed.')
-    GPIO.cleanup()
 
 
 def log_event(event):
