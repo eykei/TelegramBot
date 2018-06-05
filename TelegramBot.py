@@ -46,8 +46,7 @@ def GPIOMonitor(update):
         time.sleep(1)
 
 def status(bot, update):
-
-    doorOpen = GPIO.input(sensorPin)
+    doorOpen=GPIO.input(sensorPin)
     if doorOpen:
         update.message.reply_text('Door is currently open.')
     else:
@@ -71,11 +70,11 @@ def log(bot,update):
         update.message.reply_text(event)
 
 def start(bot, update): #function for handling the /start command
+    set_exit(False)
     update.message.reply_text('OK, begin monitoring...')
     t=threading.Thread(target=GPIOMonitor, args=[update])
     t.start()
-    global exit
-    set_exit(False)
+    
 
 def end(bot,update):
     update.message.reply_text('OK, end monitoring...')
@@ -84,6 +83,7 @@ def end(bot,update):
 def set_exit(bool):
     global exit
     exit = bool
+    
 
 def main():
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
@@ -96,9 +96,12 @@ def main():
     updater.start_polling()
 
     updater.idle()
+    
 
 if __name__ == '__main__':
     main()
+
+
 
 '''
 #testing
