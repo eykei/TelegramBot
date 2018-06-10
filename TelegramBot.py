@@ -19,31 +19,34 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
+
 def GPIOMonitor(update):
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(sensorPin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-    doorOpen=GPIO.input(sensorPin)
+    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open
+
+    doorOpen_prev = GPIO.input(sensorPin)
+
     while True:
         #print(GPIO.input(sensorPin))
+        doorOpen_curr = GPIO.input(sensorPin)
 
-        if GPIO.input(sensorPin):
-            if not doorOpen:
+        if doorOpen_curr!=doorOpen_prev:
+            if doorOpen_curr: #if the door is currently open
                 event='Door is Open!'
                 update.message.reply_text(event)
                 log_event(event)
-                doorOpen=True
-        else:
-            if doorOpen:
-                event='Door is Closed.'
+                doorOpen_prev = True
+            if not doorOpen_curr:
+                event = 'Door is Closed.'
                 update.message.reply_text(event)
                 log_event(event)
-                doorOpen=False
+                doorOpen_prev = False
 
         if exit == True:
             GPIO.cleanup()
             break
 
-        time.sleep(1)
+        time.sleep(0.5)
 
 def status(bot, update):
     doorOpen=GPIO.input(sensorPin)
