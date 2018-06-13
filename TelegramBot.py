@@ -1,23 +1,15 @@
 
-
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 import logging, time, threading, datetime, configparser, pytz
-import RPi.GPIO as GPIO
-
-config=configparser.ConfigParser()
+import RPi.GPIO as GPIO config= configparser.ConfigParser()
 config.read('config.ini')
 
-apiToken=config['settings']['apiToken']
-sensorPin=int(config['settings']['sensorPin'])
-logLength=int(config['settings']['logLength'])
-
+apiToken= config['settings']['apiToken']
+sensorPin= int(config['settings']['sensorPin'])
+logLength= int (config['settings']['logLength'])
 
 event_log=[]
-exit=False
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
+exit= False
 
 
 def GPIOMonitor(update):
@@ -27,12 +19,12 @@ def GPIOMonitor(update):
     doorOpen_prev = GPIO.input(sensorPin)
 
     while True:
-        #print(GPIO.input(sensorPin))
+        # print(GPIO.input(sensorPin))
         doorOpen_curr = GPIO.input(sensorPin)
 
-        if doorOpen_curr!=doorOpen_prev:
-            if doorOpen_curr: #if the door is currently open
-                event='Door is Open!'
+        if doorOpen_curr!= doorOpen_prev:
+            if doorOpen_curr:  # if the door is currently open
+                event= 'Door is Open!'
                 update.message.reply_text(event)
                 log_event(event)
                 doorOpen_prev = True
@@ -49,7 +41,7 @@ def GPIOMonitor(update):
         time.sleep(0.5)
 
 def status(bot, update):
-    doorOpen=GPIO.input(sensorPin)
+    doorOpen=GPIO. input(sensorPin)
     if doorOpen:
         update.message.reply_text('Door is currently open.')
     else:
@@ -59,52 +51,56 @@ def status(bot, update):
 def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
     pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
-    l=event+pst_now.strftime(' %B %d, %Y %H:%M:%S')
-    if len(event_log)>=logLength:
-        del(event_log[0])
+    l=event+ pst_now . strftime(' %B %d, %Y %H:%M:%S')
+    if len(event_log)>= logLength:
+        del( event_log[0])
         event_log.append(l)
     else:
         event_log.append(l)
 
-def log(bot,update):
+def log(bot,update) :
     update.message.reply_text('OK, printing log...')
     time.sleep(1)
     for event in event_log:
         update.message.reply_text(event)
 
-def start(bot, update): #function for handling the /start command
+def start(bot, update):  # function for handling the /start command
     set_exit(False)
     update.message.reply_text('OK, begin monitoring...')
-    t=threading.Thread(target=GPIOMonitor, args=[update])
+    t= threading.Thread(target=GPIOMonitor, args=[update])
     t.start()
-    
 
-def end(bot,update):
+
+def end(bot,update) :
     update.message.reply_text('OK, end monitoring...')
     set_exit(True)
 
 def set_exit(bool):
     global exit
     exit = bool
-    
+
+def error_callback(bot, update, error ):
+    try:
+        raise error
+    except Exception as e:
+        update.message.reply_text(e)
 
 def main():
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('start', start)) #register with dispatcher
+    dispatcher.add_handler(CommandHandler('start', start))  # register with dispatcher
     dispatcher.add_handler(CommandHandler("end", end))
-    dispatcher.add_handler(CommandHandler("log",log))
+    dispatcher.add_handler(CommandHandler("log",log) )
     dispatcher.add_handler(CommandHandler('status', status))
+    dispatcher.add_error_handler(error_callback)
 
     updater.start_polling()
 
     updater.idle()
-    
+
 
 if __name__ == '__main__':
     main()
-
-
 
 '''
 #testing
