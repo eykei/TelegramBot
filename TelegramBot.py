@@ -1,7 +1,8 @@
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 import logging, time, threading, datetime, configparser, pytz
-import RPi.GPIO as GPIO config= configparser.ConfigParser()
+import RPi.GPIO as GPIO
+config= configparser.ConfigParser()
 config.read('config.ini')
 
 apiToken= config['settings']['apiToken']
@@ -80,6 +81,7 @@ def set_exit(bool):
     exit = bool
 
 def error_callback(bot, update, error ):
+    time.sleep(600)
     try:
         raise error
     except Exception as e:
