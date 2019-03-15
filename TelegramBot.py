@@ -1,20 +1,26 @@
+'''
+author: eykei
+description:
+usage:
+'''
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 import logging, time, threading, datetime, configparser, pytz
-import RPi.GPIO as GPIO config= configparser.ConfigParser()
+import RPi.GPIO as GPIO
+config= configparser.ConfigParser()
 config.read('config.ini')
 
-apiToken= config['settings']['apiToken']
-sensorPin= int(config['settings']['sensorPin'])
-logLength= int (config['settings']['logLength'])
+apiToken = config['settings']['apiToken']
+sensorPin = int(config['settings']['sensorPin'])
+logLength = int(config['settings']['logLength'])
 
-event_log=[]
-exit= False
+event_log = []
+exit_condition = False
 
 
 def GPIOMonitor(update):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open
+    GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
+    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # sensor reads high when door is open
 
     doorOpen_prev = GPIO.input(sensorPin)
 
@@ -34,14 +40,14 @@ def GPIOMonitor(update):
                 log_event(event)
                 doorOpen_prev = False
 
-        if exit == True:
+        if exit_condition == True:
             GPIO.cleanup()
             break
 
         time.sleep(0.5)
 
 def status(bot, update):
-    doorOpen=GPIO. input(sensorPin)
+    doorOpen = GPIO.input(sensorPin)
     if doorOpen:
         update.message.reply_text('Door is currently open.')
     else:
