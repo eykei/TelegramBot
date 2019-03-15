@@ -20,7 +20,7 @@ exit_condition = False
 
 def GPIOMonitor(update):
     GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
-    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # sensor reads high when door is open
+    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open
 
     doorOpen_prev = GPIO.input(sensorPin)
 
