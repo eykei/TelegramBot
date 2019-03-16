@@ -2,10 +2,11 @@
 author: eykei
 description:
 usage:
+notes:
 '''
 
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-import logging, time, threading, datetime, configparser, pytz
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
+import logging, time, threading, datetime, configparser, pytz, atexit
 import RPi.GPIO as GPIO
 config= configparser.ConfigParser()
 config.read('config.ini')
@@ -20,7 +21,7 @@ exit_condition = False
 
 def GPIOMonitor(update):
     GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
-    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open
+    GPIO.setup(sensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open (door switch is on normally closed)
 
     doorOpen_prev = GPIO.input(sensorPin)
 
@@ -30,7 +31,7 @@ def GPIOMonitor(update):
 
         if doorOpen_curr!= doorOpen_prev:
             if doorOpen_curr:  # if the door is currently open
-                event= 'Door is Open!'
+                event = 'Door is Open!'
                 update.message.reply_text(event)
                 log_event(event)
                 doorOpen_prev = True
@@ -64,20 +65,20 @@ def log_event(event):
     else:
         event_log.append(l)
 
-def log(bot,update) :
+def log(update) :
     update.message.reply_text('OK, printing log...')
     time.sleep(1)
     for event in event_log:
         update.message.reply_text(event)
 
-def start(bot, update):  # function for handling the /start command
+def start(update):  # function for handling the /start command
     set_exit(False)
     update.message.reply_text('OK, begin monitoring...')
     t= threading.Thread(target=GPIOMonitor, args=[update])
     t.start()
 
 
-def end(bot,update) :
+def end(update) :
     update.message.reply_text('OK, end monitoring...')
     set_exit(True)
 
@@ -85,11 +86,8 @@ def set_exit(bool):
     global exit
     exit = bool
 
-def error_callback(bot, update, error ):
-    try:
-        raise error
-    except Exception as e:
-        update.message.reply_text(e)
+def error_callback(update, error ):
+    update.message.reply_text(str(error))
 
 def main():
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
