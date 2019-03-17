@@ -18,6 +18,11 @@ logLength = int(config['settings']['logLength'])
 event_log = []
 exit_condition = False
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+
 
 def GPIOMonitor(update):
     GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
@@ -59,8 +64,8 @@ def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
     pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
     l=event+ pst_now . strftime(' %B %d, %Y %H:%M:%S')
-    if len(event_log)>= logLength:
-        del( event_log[0])
+    if len(event_log) >= logLength:
+        del(event_log[0])
         event_log.append(l)
     else:
         event_log.append(l)
@@ -70,6 +75,7 @@ def log(bot, update):
     time.sleep(1)
     for event in event_log:
         update.message.reply_text(event)
+
 
 def start(bot, update):  # function for handling the /start command
     set_exit(False)
@@ -82,12 +88,14 @@ def end(bot, update) :
     update.message.reply_text('OK, end monitoring...')
     set_exit(True)
 
+
 def set_exit(bool):
     global exit
     exit = bool
 
 
 def error_callback(bot, update, error):
+    logger.warning('Update "%s" caused error "%s"', update, error)
     update.message.reply_text(str(error))
 
 def main():
