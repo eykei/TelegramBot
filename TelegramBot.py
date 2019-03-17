@@ -65,20 +65,20 @@ def log_event(event):
     else:
         event_log.append(l)
 
-def log(update) :
+def log(bot, update):
     update.message.reply_text('OK, printing log...')
     time.sleep(1)
     for event in event_log:
         update.message.reply_text(event)
 
-def start(update):  # function for handling the /start command
+def start(bot, update):  # function for handling the /start command
     set_exit(False)
     update.message.reply_text('OK, begin monitoring...')
     t= threading.Thread(target=GPIOMonitor, args=[update])
     t.start()
 
 
-def end(update) :
+def end(bot, update) :
     update.message.reply_text('OK, end monitoring...')
     set_exit(True)
 
@@ -87,7 +87,7 @@ def set_exit(bool):
     exit = bool
 
 
-def error_callback(update, error ):
+def error_callback(bot, update, error):
     update.message.reply_text(str(error))
 
 def main():
