@@ -3,6 +3,7 @@ author: eykei
 description:
 usage:
 notes:
+issues: handle timed out error
 '''
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
@@ -52,6 +53,7 @@ def GPIOMonitor(update):
 
         time.sleep(0.5)
 
+
 def status(bot, update):
     doorOpen = GPIO.input(sensorPin)
     if doorOpen:
@@ -96,7 +98,7 @@ def set_exit(bool):
 
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
-    update.message.reply_text(str(error))
+    update.message.reply_text("Error, please restart.")
 
 def main():
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
