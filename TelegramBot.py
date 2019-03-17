@@ -90,8 +90,8 @@ def end(bot, update) :
 
 
 def set_exit(bool):
-    global exit
-    exit = bool
+    global exit_condition
+    exit_condition = bool
 
 
 def error_callback(bot, update, error):
