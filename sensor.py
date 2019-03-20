@@ -22,12 +22,12 @@ class Sensor():
 
                 if doorOpen_curr != doorOpen_prev:
                     if doorOpen_curr:  # if the door is currently open
-                        event = f'{self.name} is Open!'
+                        event = '{} is Open!'.format(self.name)
                         update.message.reply_text(event)
                         #log_event(event)
                         doorOpen_prev = True
                     if not doorOpen_curr:
-                        event = f'{self.name} is Closed.'
+                        event = '{} is Closed.'.format(self.name)
                         update.message.reply_text(event)
                         #log_event(event)
                         doorOpen_prev = False
@@ -41,7 +41,7 @@ class Sensor():
         elif self.type == 'motion':
             while True:
                 if GPIO.input(self.pin):
-                    event = f'{self.name}: motion detected!'
+                    event = '{}: motion detected!'.format(self.name)
                     update.message.reply_text(event)
                     time.sleep(10)
 
