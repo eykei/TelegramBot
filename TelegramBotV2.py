@@ -26,13 +26,6 @@ sensor1 = sensor.Sensor('Door', 'contact', 7)
 sensors.append(sensor1)
 
 '''
-def status(bot, update):
-    doorOpen = GPIO.input(sensorPin)
-    if doorOpen:
-        update.message.reply_text('Door is currently open.')
-    else:
-        update.message.reply_text('Door is currently closed.')
-
 
 def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
@@ -44,15 +37,19 @@ def log_event(event):
     else:
         event_log.append(l)
 
-def log(bot, update):
+def print_log(bot, update):
     update.message.reply_text('OK, printing log...')
     time.sleep(1)
     for event in event_log:
         update.message.reply_text(event)
 '''
 
+def status(bot, update):
+    for s in sensors:
+        s.status(update)
 
-def home(bot, update):  # function for handling the /start command
+
+def home(bot, update):
     update.message.reply_text('Arming for Home...')
     for s in sensors:
         if s.type == 'contact':
@@ -75,7 +72,6 @@ def disarm(bot, update) :
         s.exit_condition = True
 
 
-
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
     # update.message.reply_text("Error, please restart.")
@@ -86,8 +82,8 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
     dispatcher.add_handler(CommandHandler("disarm", disarm))
-    #dispatcher.add_handler(CommandHandler("log",log) )
-    #dispatcher.add_handler(CommandHandler('status', status))
+    #dispatcher.add_handler(CommandHandler("log",print_log) )
+    dispatcher.add_handler(CommandHandler('status', status))
     dispatcher.add_error_handler(error_callback)
 
     updater.start_polling()
