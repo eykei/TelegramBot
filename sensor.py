@@ -1,4 +1,4 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 class Sensor():
@@ -10,11 +10,9 @@ class Sensor():
         self.exit_condition = False
 
 
+    def monitor(self, update):
         GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open (door switch is on normally closed)
-
-
-    def monitor(self, update):
         if self.type == 'contact':
             doorOpen_prev = GPIO.input(self.pin)
             while True:
