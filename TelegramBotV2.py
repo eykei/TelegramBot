@@ -56,12 +56,15 @@ def home(bot, update):  # function for handling the /start command
     update.message.reply_text('Arming for Home...')
     for s in sensors:
         if s.type == 'contact':
+            s.exit_condition = False
             t = threading.Thread(target=s.monitor, args=[update])
             t.start()
 
 def away(bot, update):
+
     update.message.reply_text('Arming for Away...')
     for s in sensors:
+        s.exit_condition = False
         t = threading.Thread(target=s.monitor, args=[update])
         t.start()
 
