@@ -22,7 +22,8 @@ def initialize(configFile):
     config = configparser.ConfigParser()
     config.read(configFile)
     apiToken = config['settings']['apiToken']
-    logLength = int(config['settings']['logLength'])
+    # logLength = int(config['settings']['logLength'])
+    GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
 
     for section in config:
         if "sensor" in section:
