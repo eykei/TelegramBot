@@ -37,7 +37,7 @@ def initialize(configFile):
 def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
     pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
-    l=event+ pst_now . strftime(' %B %d, %Y %H:%M:%S')
+    l = event + pst_now.strftime(' %B %d, %Y %H:%M:%S')
     if len(event_log) >= logLength:
         del(event_log[0])
         event_log.append(l)
@@ -58,9 +58,10 @@ def status(bot, update):
 
 def home(bot, update):
     update.message.reply_text('Arming for Home...')
+    #disarm all sensors
     for s in sensors:
-        if s.type == 'motion':
-            s.exit_condition = True
+        s.exit_condition = True
+    #arm only the contact sensors
     for s in sensors:
         if s.type == 'contact':
             s.exit_condition = False
@@ -70,6 +71,10 @@ def home(bot, update):
 def away(bot, update):
 
     update.message.reply_text('Arming for Away...')
+    #disarm all sensors
+    for s in sensors:
+        s.exit_condition = True
+    #arm all sensors
     for s in sensors:
         s.exit_condition = False
         t = threading.Thread(target=s.monitor, args=[update])
@@ -86,8 +91,13 @@ def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
     # update.message.reply_text("Error, please restart.")
 
+def cleanup():
+    print('Cleaning up...')
+    GPIO.cleanup()
+
 def main():
     print('Starting Telegram Bot...')
+    atexit.register(cleanup)
     apiToken = initialize('config.ini')
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher

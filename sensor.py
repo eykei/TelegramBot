@@ -58,7 +58,6 @@ class Sensor():
                     time.sleep(10)
 
                 if self.exit_condition == True:
-                    GPIO.cleanup()
                     return
         else:
             raise Exception('Invalid Sensor Type')
