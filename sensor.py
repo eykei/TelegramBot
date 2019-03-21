@@ -55,7 +55,7 @@ class Sensor():
                 if GPIO.input(self.pin):
                     event = '{} detects motion.'.format(self.name)
                     update.message.reply_text(event)
-                    time.sleep(10)
+                    time.sleep(15)
 
                 if self.exit_condition:
                     GPIO.cleanup()

@@ -62,6 +62,7 @@ def home(bot, update):
     #disarm all sensors
     for s in sensors:
         s.exit_condition = True
+    time.sleep(3)
     #arm only the contact sensors
     for s in sensors:
         if s.type == 'contact':
@@ -75,6 +76,7 @@ def away(bot, update):
     #disarm all sensors
     for s in sensors:
         s.exit_condition = True
+    time.sleep(3)
     #arm all sensors
     for s in sensors:
         s.exit_condition = False
