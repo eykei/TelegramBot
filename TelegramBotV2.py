@@ -29,8 +29,8 @@ def initialize(configFile):
             name = config[section]['name']
             type = config[section]['type']
             pin = config[section]['pin']
-            sensors.append(sensor.Sensor(name, type, pin))
-            
+            sensors.append(sensor.Sensor(name, type, int(pin)))
+
     return apiToken
 
 '''
@@ -90,6 +90,7 @@ def main():
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
+    dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
     #dispatcher.add_handler(CommandHandler("log",print_log) )
     dispatcher.add_handler(CommandHandler('status', status))
