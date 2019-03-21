@@ -9,8 +9,7 @@ class Sensor():
         self.pin = pin
 
         self.exit_condition = False
-        GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
-        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open (door switch is on normally closed)
+
 
     def status(self, update):
         if self.type == 'contact':
@@ -27,6 +26,8 @@ class Sensor():
             raise Exception('Unrecognized Sensor Type')
 
     def monitor(self, update):
+        GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
+        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open (door switch is on normally closed)
         if self.type == 'contact':
             doorOpen_prev = GPIO.input(self.pin)
             while True:
