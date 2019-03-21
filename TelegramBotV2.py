@@ -89,6 +89,9 @@ def disarm(bot, update) :
     for s in sensors:
         s.exit_condition = True
 
+def cleanup():
+    print('Cleaning Up...')
+    GPIO.cleanup()
 
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
@@ -98,6 +101,7 @@ def error_callback(bot, update, error):
 def main():
     print('Starting Telegram Bot...')
     apiToken = initialize('config.ini')
+    atexit.register(cleanup)
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
