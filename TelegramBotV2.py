@@ -34,7 +34,6 @@ def initialize(configFile):
     return apiToken
 
 '''
-
 def log_event(event):
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
     pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
@@ -59,6 +58,9 @@ def status(bot, update):
 
 def home(bot, update):
     update.message.reply_text('Arming for Home...')
+    for s in sensors:
+        if s.type == 'motion':
+            s.exit_condition = True
     for s in sensors:
         if s.type == 'contact':
             s.exit_condition = False
