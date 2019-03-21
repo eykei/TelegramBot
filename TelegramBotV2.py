@@ -10,11 +10,6 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # p
 import logging, time, threading, datetime, configparser, pytz, atexit
 import sensor
 import RPi.GPIO as GPIO
-config= configparser.ConfigParser()
-config.read('config.ini')
-
-apiToken = config['settings']['apiToken']
-logLength = int(config['settings']['logLength'])
 
 sensors = []
 event_log = []
@@ -22,8 +17,21 @@ event_log = []
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-sensor1 = sensor.Sensor('Door', 'contact', 7)
-sensors.append(sensor1)
+
+def initialize(configFile):
+    config = configparser.ConfigParser()
+    config.read(configFile)
+    apiToken = config['settings']['apiToken']
+    logLength = int(config['settings']['logLength'])
+
+    for section in config:
+        if "sensor" in section:
+            name = config[section]['name']
+            type = config[section]['type']
+            pin = config[section]['pin']
+            sensors.append(sensor.Sensor(name, type, pin))
+            
+    return apiToken
 
 '''
 
@@ -78,6 +86,7 @@ def error_callback(bot, update, error):
 
 def main():
     print('Starting Telegram Bot...')
+    apiToken = initialize('config.ini')
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
