@@ -92,13 +92,9 @@ def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
     # update.message.reply_text("Error, please restart.")
 
-def cleanup():
-    print('Cleaning up...')
-    GPIO.cleanup()
 
 def main():
     print('Starting Telegram Bot...')
-    atexit.register(cleanup)
     apiToken = initialize('config.ini')
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher

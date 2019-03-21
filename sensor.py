@@ -10,7 +10,6 @@ class Sensor():
 
         self.exit_condition = False
 
-
     def status(self, update):
         if self.type == 'contact':
             if GPIO.input(self.pin):
@@ -45,7 +44,7 @@ class Sensor():
                         #log_event(event)
                         doorOpen_prev = False
 
-                if self.exit_condition == True:
+                if self.exit_condition:
                     GPIO.cleanup()
                     return
 
@@ -58,7 +57,8 @@ class Sensor():
                     update.message.reply_text(event)
                     time.sleep(10)
 
-                if self.exit_condition == True:
+                if self.exit_condition:
+                    GPIO.cleanup()
                     return
         else:
             raise Exception('Invalid Sensor Type')
