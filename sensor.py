@@ -50,7 +50,7 @@ class Sensor():
                     # GPIO.cleanup()
                     return
 
-                time.sleep(0.5)
+                time.sleep(0.1)
 
         elif self.type == 'motion':
             while True:
