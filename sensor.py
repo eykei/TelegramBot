@@ -24,12 +24,12 @@ class Sensor():
 
     def monitor(self, update):
         if self.type == 'contact':
+            time.sleep(0.1)
             doorOpen_prev = GPIO.input(self.pin)
             while True:
+                time.sleep(0.1)
                 doorOpen_curr = GPIO.input(self.pin)
-
                 if doorOpen_curr != doorOpen_prev:
-                    time.sleep(0.5)
                     if doorOpen_curr:  # if the door is currently open
                         event = '{} is Open.'.format(self.name)
                         update.message.reply_text(event)
@@ -49,6 +49,7 @@ class Sensor():
 
         elif self.type == 'motion':
             while True:
+                time.sleep(0.1)
                 if GPIO.input(self.pin):
                     event = '{} detects motion.'.format(self.name)
                     update.message.reply_text(event)
