@@ -5,7 +5,7 @@ status: working
 todo: handle timed out error
 '''
 
-k,from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
 import logging, time, threading, datetime, configparser, pytz, atexit
 import sensor
 import RPi.GPIO as GPIO
