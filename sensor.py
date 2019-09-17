@@ -19,11 +19,6 @@ class Sensor():
                 update.message.reply_text('{} is currently Open.'.format(self.name))
             else:
                 update.message.reply_text('{} is currently Closed.'.format(self.name))
-        elif self.type == 'motion':
-            if GPIO.input(self.pin):
-                update.message.reply_text('{} currently detects motion.'.format(self.name))
-            else:
-                update.message.reply_text('{} currently detects no motion.'.format(self.name))
         else:
             raise Exception('Unrecognized Sensor Type')
 
@@ -34,6 +29,7 @@ class Sensor():
                 doorOpen_curr = GPIO.input(self.pin)
 
                 if doorOpen_curr != doorOpen_prev:
+                    time.sleep(0.5)
                     if doorOpen_curr:  # if the door is currently open
                         event = '{} is Open.'.format(self.name)
                         update.message.reply_text(event)

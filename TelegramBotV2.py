@@ -1,12 +1,11 @@
 '''
-author: eykei
 description:
 usage:
-notes:
-issues: handle timed out error
+status: working
+todo: handle timed out error
 '''
 
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
+k,from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
 import logging, time, threading, datetime, configparser, pytz, atexit
 import sensor
 import RPi.GPIO as GPIO
