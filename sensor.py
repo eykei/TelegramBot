@@ -9,9 +9,11 @@ class Sensor():
         self.pin = pin
         self.exit_condition = False
         GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
-        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # sensor reads high when door is open (door switch is on normally closed)
+        if self.name == 'contact':
+            GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # sensor reads high when door is open (door switch is on normally open)
+        if self.name == 'motion':
+            GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         print(self.name + ' activated!')
-
 
     def status(self, update):
         if self.type == 'contact':
@@ -19,12 +21,16 @@ class Sensor():
                 update.message.reply_text('{} is currently Open.'.format(self.name))
             else:
                 update.message.reply_text('{} is currently Closed.'.format(self.name))
+        elif self.type == 'motion':
+            if GPIO.input(self.pin):
+                update.message.reply_text('{} detects motion.'.format(self.name))
+            else:
+                update.message.reply_text('{} detects no motion.'.format(self.name))
         else:
             raise Exception('Unrecognized Sensor Type')
 
     def monitor(self, update):
         if self.type == 'contact':
-            time.sleep(0.1)
             doorOpen_prev = GPIO.input(self.pin)
             while True:
                 time.sleep(0.1)
@@ -33,19 +39,18 @@ class Sensor():
                     if doorOpen_curr:  # if the door is currently open
                         event = '{} is Open.'.format(self.name)
                         update.message.reply_text(event)
-                        #log_event(event)
+                        # log_event(event)
                         doorOpen_prev = True
                     if not doorOpen_curr:
                         event = '{} is Closed.'.format(self.name)
                         update.message.reply_text(event)
-                        #log_event(event)
+                        # log_event(event)
                         doorOpen_prev = False
 
                 if self.exit_condition:
                     # GPIO.cleanup()
                     return
 
-                time.sleep(0.1)
 
         elif self.type == 'motion':
             while True:
@@ -60,4 +65,3 @@ class Sensor():
                     return
         else:
             raise Exception('Invalid Sensor Type')
-

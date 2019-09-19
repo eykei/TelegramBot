@@ -23,7 +23,6 @@ def initialize(configFile):
     apiToken = config['settings']['apiToken']
     # logLength = int(config['settings']['logLength'])
 
-
     for section in config:
         if "sensor" in section:
             name = config[section]['name']
@@ -32,6 +31,7 @@ def initialize(configFile):
             sensors.append(sensor.Sensor(name, type, int(pin)))
 
     return apiToken
+
 
 '''
 def log_event(event):
@@ -51,6 +51,7 @@ def print_log(bot, update):
         update.message.reply_text(event)
 '''
 
+
 def status(bot, update):
     for s in sensors:
         s.status(update)
@@ -58,39 +59,41 @@ def status(bot, update):
 
 def home(bot, update):
     update.message.reply_text('Arming for Home...')
-    #disarm all sensors
+    # disarm all sensors
     for s in sensors:
         s.exit_condition = True
     time.sleep(2)
-    #arm only the contact sensors
+    # arm only the contact sensors
     for s in sensors:
         if s.type == 'contact':
             s.exit_condition = False
             t = threading.Thread(target=s.monitor, args=[update])
             t.start()
 
-def away(bot, update):
 
+def away(bot, update):
     update.message.reply_text('Arming for Away...')
-    #disarm all sensors
+    # disarm all sensors
     for s in sensors:
         s.exit_condition = True
     time.sleep(2)
-    #arm all sensors
+    # arm all sensors
     for s in sensors:
         s.exit_condition = False
         t = threading.Thread(target=s.monitor, args=[update])
         t.start()
 
 
-def disarm(bot, update) :
+def disarm(bot, update):
     update.message.reply_text('Disarming...')
     for s in sensors:
         s.exit_condition = True
 
+
 def cleanup():
     print('Cleaning Up...')
     GPIO.cleanup()
+
 
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
@@ -106,7 +109,7 @@ def main():
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
     dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
-    #dispatcher.add_handler(CommandHandler("log",print_log) )
+    # dispatcher.add_handler(CommandHandler("log",print_log) )
     dispatcher.add_handler(CommandHandler('status', status))
     dispatcher.add_error_handler(error_callback)
 
