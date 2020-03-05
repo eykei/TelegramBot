@@ -118,7 +118,7 @@ def main():
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
     dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
-    # dispatcher.add_handler(CommandHandler("log",print_log) )
+    dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('status', status))
     dispatcher.add_error_handler(error_callback)
 
