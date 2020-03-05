@@ -103,10 +103,11 @@ def error_callback(bot, update, error):
     time.sleep(10)
     for s in sensors:
         s.exit_condition = False
+    print("Bot restarted!")
     # update.message.reply_text("Error, please restart.")
 
 def help(bot, update):
-    update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors')
+    update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors.')
 
 
 def main():
