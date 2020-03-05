@@ -1,8 +1,8 @@
 '''
-description:
+description: see readme.txt
 usage:
 status: working
-todo: handle timed out error
+todo:
 '''
 
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
@@ -97,7 +97,14 @@ def cleanup():
 
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
+    for s in sensors:
+        s.exit_condition = True
+    for s in sensors:
+        s.exit_condition = False
     # update.message.reply_text("Error, please restart.")
+
+def help(bot, update)
+    update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors')
 
 
 def main():
