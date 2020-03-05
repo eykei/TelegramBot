@@ -97,13 +97,15 @@ def cleanup():
 
 def error_callback(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
+    time.sleep(10)
     for s in sensors:
         s.exit_condition = True
+    time.sleep(10)
     for s in sensors:
         s.exit_condition = False
     # update.message.reply_text("Error, please restart.")
 
-def help(bot, update)
+def help(bot, update):
     update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors')
 
 
