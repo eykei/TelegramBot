@@ -5,8 +5,8 @@ status: working
 todo:
 '''
 
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)  # python-telegram-bot
-import logging, time, threading, datetime, configparser, pytz, atexit
+from telegram.ext import (Updater, CommandHandler)
+import logging, time, threading, configparser, atexit
 import sensor
 import RPi.GPIO as GPIO
 
@@ -44,7 +44,7 @@ def log_event(event):
     else:
         event_log.append(l)
 
-def print_log(bot, update):
+def print_log(update, context):
     update.message.reply_text('OK, printing log...')
     time.sleep(1)
     for event in event_log:
@@ -52,12 +52,12 @@ def print_log(bot, update):
 '''
 
 
-def status(bot, update):
+def status(update, context):
     for s in sensors:
         s.status(update)
 
 
-def home(bot, update):
+def home(update, context):
     update.message.reply_text('Arming for Home...')
     # disarm all sensors
     for s in sensors:
@@ -71,7 +71,7 @@ def home(bot, update):
             t.start()
 
 
-def away(bot, update):
+def away(update, context):
     update.message.reply_text('Arming for Away...')
     # disarm all sensors
     for s in sensors:
@@ -84,7 +84,7 @@ def away(bot, update):
         t.start()
 
 
-def disarm(bot, update):
+def disarm(update, context):
     update.message.reply_text('Disarming...')
     for s in sensors:
         s.exit_condition = True
@@ -95,8 +95,8 @@ def cleanup():
     GPIO.cleanup()
 
 
-def error_callback(bot, update, error):
-    logger.warning('Update "%s" caused error "%s"', update, error)
+def error_callback(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
     time.sleep(20*60)
     for s in sensors:
         s.exit_condition = True
@@ -106,7 +106,7 @@ def error_callback(bot, update, error):
     print("Bot restarted!")
     # update.message.reply_text("Error, please restart.")
 
-def help(bot, update):
+def help(update, context):
     update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors.')
 
 
@@ -116,11 +116,13 @@ def main():
     atexit.register(cleanup)
     updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
+
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
     dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('status', status))
+
     dispatcher.add_error_handler(error_callback)
 
     updater.start_polling()
