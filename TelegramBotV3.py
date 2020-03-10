@@ -97,12 +97,14 @@ def cleanup():
 
 def error_callback(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
-    time.sleep(20*60)
+    time.sleep(10)
     for s in sensors:
         s.exit_condition = True
     time.sleep(10)
     for s in sensors:
         s.exit_condition = False
+        t = threading.Thread(target=s.monitor, args=[update])
+        t.start()
     print("Bot restarted!")
     # update.message.reply_text("Error, please restart.")
 
