@@ -17,21 +17,25 @@ class Sensor():
             raise Exception('Unrecognized Sensor Type')
         print(self.name + ' activated!')
 
-    def status(self, update):
+    def status(self, context, subscribers):
         if self.type == 'contact':
             if GPIO.input(self.pin):
-                update.message.reply_text('{} is currently Open.'.format(self.name))
+                for subscriber in subscribers:
+                    context.bot.send_message(subscriber, f'{self.name} is currently open.')
             else:
-                update.message.reply_text('{} is currently Closed.'.format(self.name))
+                for subscriber in subscribers:
+                    context.bot.send_message(subscriber, f'{self.name} is currently closed.')
         elif self.type == 'motion':
             if GPIO.input(self.pin):
-                update.message.reply_text('{} detects motion.'.format(self.name))
+                for subscriber in subscribers:
+                    context.bot.send_message(subscriber, f'{self.name} detects motion.')
             else:
-                update.message.reply_text('{} detects no motion.'.format(self.name))
+                for subscriber in subscribers:
+                    context.bot.send_message(subscriber, f'{self.name} does not detect motion.')
         else:
             raise Exception('Unrecognized Sensor Type')
 
-    def monitor(self, update):
+    def monitor(self, context, subscribers):
         if self.type == 'contact':
             doorOpen_prev = GPIO.input(self.pin)
             while True:
@@ -39,27 +43,24 @@ class Sensor():
                 doorOpen_curr = GPIO.input(self.pin)
                 if doorOpen_curr != doorOpen_prev:
                     if doorOpen_curr:  # if the door is currently open
-                        event = '{} is Open.'.format(self.name)
-                        update.message.reply_text(event)
-                        # log_event(event)
+                        for subscriber in subscribers:
+                            context.bot.send_message(subscriber, f'{self.name} is open.')
                         doorOpen_prev = True
                     if not doorOpen_curr:
-                        event = '{} is Closed.'.format(self.name)
-                        update.message.reply_text(event)
-                        # log_event(event)
+                        for subscriber in subscribers:
+                            context.bot.send_message(subscriber, f'{self.name} is closed.')
                         doorOpen_prev = False
 
                 if self.exit_condition:
                     # GPIO.cleanup()
                     return
 
-
         elif self.type == 'motion':
             while True:
                 time.sleep(0.1)
                 if GPIO.input(self.pin):
-                    event = '{} detects motion.'.format(self.name)
-                    update.message.reply_text(event)
+                    for subscriber in subscribers:
+                        context.bot.send_message(subscriber, f'{self.name} detects motion.')
                     time.sleep(15)
 
                 if self.exit_condition:

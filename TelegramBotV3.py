@@ -67,7 +67,6 @@ def status(update, context):
     for s in sensors:
         s.status(update)
 
-
 def home(update, context):
     update.message.reply_text('Arming for Home...')
     # disarm all sensors
@@ -78,7 +77,7 @@ def home(update, context):
     for s in sensors:
         if s.type == 'contact':
             s.exit_condition = False
-            t = threading.Thread(target=s.monitor, args=[update])
+            t = threading.Thread(target=s.monitor, args=[context, subscribers])
             t.start()
 
 
@@ -91,7 +90,7 @@ def away(update, context):
     # arm all sensors
     for s in sensors:
         s.exit_condition = False
-        t = threading.Thread(target=s.monitor, args=[update])
+        t = threading.Thread(target=s.monitor, args=[context, subscribers])
         t.start()
 
 
@@ -130,11 +129,14 @@ def main():
     updater = Updater(apiToken, use_context=True)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
 
+    dispatcher.add_handler(CommandHandler('subscribe', subscribe))
+    dispatcher.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
     dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('status', status))
+
 
     dispatcher.add_error_handler(error_callback)
 
