@@ -113,10 +113,9 @@ def error_callback(update, context):
     time.sleep(10)
     for s in sensors:
         s.exit_condition = False
-        t = threading.Thread(target=s.monitor, args=[update])
+        t = threading.Thread(target=s.monitor, args=[context, subscribers])
         t.start()
     print("Bot restarted!")
-    # update.message.reply_text("Error, please restart.")
 
 def help(update, context):
     update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors.')
