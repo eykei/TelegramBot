@@ -11,7 +11,7 @@ import sensor
 import RPi.GPIO as GPIO
 
 sensors = []
-event_log = []
+subscribers = []
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,6 +51,16 @@ def print_log(update, context):
         update.message.reply_text(event)
 '''
 
+def subscribe(update, context):
+    subscribers.append(update.message.from_user['id'])
+    update.message.reply_text('Successfully subscribed!')
+
+def unsubscribe(update, context):
+    try:
+        subscribers.remove(update.message.from_user['id'])
+        update.message.reply_text('Successfully unsubscribed!')
+    except:
+        update.message.reply_text('Could not find subscriber!')
 
 def status(update, context):
     print(update.message.from_user)
