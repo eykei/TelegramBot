@@ -53,6 +53,9 @@ def print_log(update, context):
 
 
 def status(update, context):
+    print(context.user_data)
+    print(context.chat_data)
+    print(context.bot_data)
     for s in sensors:
         s.status(update)
 
