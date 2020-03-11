@@ -13,8 +13,9 @@ import RPi.GPIO as GPIO
 sensors = []
 subscribers = []
 
-# logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-# logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def initialize(configFile):
     config = configparser.ConfigParser()
@@ -30,24 +31,33 @@ def initialize(configFile):
 
     return apiToken
 
+
 def subscribe(update, context):
-    subscribers.append(update.message.from_user['id'])
-    update.message.reply_text('Successfully subscribed!')
+    user_id = update.message.from_user['id']
+    if user_id not in subscribers:
+        subscribers.append(user_id)
+        update.message.reply_text('Successfully subscribed!')
+    else:
+        update.message.reply_text('Already subscribed!')
+
 
 def unsubscribe(update, context):
-    subscribers.remove(update.message.from_user['id'])
     try:
-        subscribers.remove(update.message.from_user['id'])
+        user_id = update.message.from_user['id']
+        subscribers.remove(user_id)
         update.message.reply_text('Successfully unsubscribed!')
-    except:
-        update.message.reply_text('Could not find subscriber!')
+    except ValueError:
+        update.message.reply_text('Error, Subscriber does not exist!')
+
 
 def status(update, context):
-    print(update.message.from_user)
+    print("Command received: status")
     for s in sensors:
         s.status(context, subscribers)
 
+
 def home(update, context):
+    print("Command received: home")
     update.message.reply_text('Arming for Home...')
     # disarm all sensors
     for s in sensors:
@@ -62,6 +72,7 @@ def home(update, context):
 
 
 def away(update, context):
+    print("Command received: away")
     update.message.reply_text('Arming for Away...')
     # disarm all sensors
     for s in sensors:

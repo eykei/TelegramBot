@@ -26,15 +26,7 @@ class Sensor():
             else:
                 for subscriber in subscribers:
                     context.bot.send_message(subscriber, '{} is currently closed.'.format(self.name))
-        elif self.type == 'motion':
-            if GPIO.input(self.pin):
-                for subscriber in subscribers:
-                    context.bot.send_message(subscriber, '{} detects motion.'.format(self.name))
-            else:
-                for subscriber in subscribers:
-                    context.bot.send_message(subscriber, '{} does not detect motion.'.format(self.name))
-        else:
-            raise Exception('Unrecognized Sensor Type')
+
 
     def monitor(self, context, subscribers):
         if self.type == 'contact':
@@ -69,7 +61,3 @@ class Sensor():
                     return
         else:
             raise Exception('Invalid Sensor Type')
-
-    def broadcast(self, message, recipients):
-        for recipient in recipients:
-            context.bot.send_message(recipient, message)
