@@ -86,6 +86,7 @@ def away(update, context):
 
 
 def disarm(update, context):
+    print("Command received: disarm")
     update.message.reply_text('Disarming...')
     for s in sensors:
         s.exit_condition = True
@@ -111,6 +112,7 @@ def error_callback(update, context):
         context.bot.send_message(subscriber, 'Error encountered, bot restarted!')
 
 def help(update, context):
+    print("Command received: help")
     update.message.reply_text('Commands:'
                               '\n/subscribe: Subscribe to receive alerts. '
                               '\n/unsubscribe: Unsubscribe from alerts'
