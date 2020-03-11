@@ -7,6 +7,7 @@ class Sensor():
         self.name = name  # e.g. Door 1, Basement
         self.type = type  # contact or motion
         self.pin = pin
+
         self.exit_condition = False
         GPIO.setmode(GPIO.BOARD)  # use the name of the pins by position
         if self.type == 'contact':
@@ -68,3 +69,7 @@ class Sensor():
                     return
         else:
             raise Exception('Invalid Sensor Type')
+
+    def broadcast(self, message, recipients):
+        for recipient in recipients:
+            context.bot.send_message(recipient, message)

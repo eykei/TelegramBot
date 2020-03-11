@@ -16,12 +16,10 @@ subscribers = []
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 def initialize(configFile):
     config = configparser.ConfigParser()
     config.read(configFile)
     apiToken = config['settings']['apiToken']
-    # logLength = int(config['settings']['logLength'])
 
     for section in config:
         if "sensor" in section:
@@ -32,30 +30,12 @@ def initialize(configFile):
 
     return apiToken
 
-
-'''
-def log_event(event):
-    utc_now = pytz.utc.localize(datetime.datetime.utcnow())
-    pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
-    l = event + pst_now.strftime(' %B %d, %Y %H:%M:%S')
-    if len(event_log) >= logLength:
-        del(event_log[0])
-        event_log.append(l)
-    else:
-        event_log.append(l)
-
-def print_log(update, context):
-    update.message.reply_text('OK, printing log...')
-    time.sleep(1)
-    for event in event_log:
-        update.message.reply_text(event)
-'''
-
 def subscribe(update, context):
     subscribers.append(update.message.from_user['id'])
     update.message.reply_text('Successfully subscribed!')
 
 def unsubscribe(update, context):
+    subscribers.remove(update.message.from_user['id'])
     try:
         subscribers.remove(update.message.from_user['id'])
         update.message.reply_text('Successfully unsubscribed!')
@@ -65,7 +45,7 @@ def unsubscribe(update, context):
 def status(update, context):
     print(update.message.from_user)
     for s in sensors:
-        s.status(update)
+        s.status(context, subscribers)
 
 def home(update, context):
     update.message.reply_text('Arming for Home...')
@@ -116,9 +96,16 @@ def error_callback(update, context):
         t = threading.Thread(target=s.monitor, args=[context, subscribers])
         t.start()
     print("Bot restarted!")
+    for subscriber in subscribers:
+        context.bot.send_message(subscriber, 'Error encountered, bot restarted!')
 
 def help(update, context):
-    update.message.reply_text('Commands:\n/home: Arm only contact sensors.\n/away: Arm all sensors.\n/disarm: Disarm all sensors.')
+    update.message.reply_text('Commands:'
+                              '\n/subscribe: Subscribe to receive alerts. '
+                              '\n/unsubscribe: Unsubscribe from alerts'
+                              '\n/home: Arm only contact sensors.'
+                              '\n/away: Arm all sensors.'
+                              '\n/disarm: Disarm all sensors.')
 
 
 def main():
@@ -128,14 +115,13 @@ def main():
     updater = Updater(apiToken, use_context=True)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(CommandHandler('subscribe', subscribe))
+    dispatcher.add_handler(CommandHandler('subscribe', subscribe))#register functions with dispatcher
     dispatcher.add_handler(CommandHandler('unsubscribe', unsubscribe))
-    dispatcher.add_handler(CommandHandler('home', home))  # register with dispatcher
+    dispatcher.add_handler(CommandHandler('home', home))
     dispatcher.add_handler(CommandHandler('away', away))
     dispatcher.add_handler(CommandHandler("disarm", disarm))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('status', status))
-
 
     dispatcher.add_error_handler(error_callback)
 
