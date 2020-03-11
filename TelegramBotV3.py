@@ -125,7 +125,7 @@ def main():
     print('Starting Telegram Bot...')
     apiToken = initialize('config.ini')
     atexit.register(cleanup)
-    updater = Updater(apiToken, use_context=True)  # fetches updates from telegram, gives to dispatcher
+    updater = Updater(apiToken)  # fetches updates from telegram, gives to dispatcher
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('subscribe', subscribe))
