@@ -21,17 +21,17 @@ class Sensor():
         if self.type == 'contact':
             if GPIO.input(self.pin):
                 for subscriber in subscribers:
-                    context.bot.send_message(subscriber, f'{self.name} is currently open.')
+                    context.bot.send_message(subscriber, '{} is currently open.'.format(self.name))
             else:
                 for subscriber in subscribers:
-                    context.bot.send_message(subscriber, f'{self.name} is currently closed.')
+                    context.bot.send_message(subscriber, '{} is currently closed.'.format(self.name))
         elif self.type == 'motion':
             if GPIO.input(self.pin):
                 for subscriber in subscribers:
-                    context.bot.send_message(subscriber, f'{self.name} detects motion.')
+                    context.bot.send_message(subscriber, '{} detects motion.'.format(self.name))
             else:
                 for subscriber in subscribers:
-                    context.bot.send_message(subscriber, f'{self.name} does not detect motion.')
+                    context.bot.send_message(subscriber, '{} does not detect motion.'.format(self.name))
         else:
             raise Exception('Unrecognized Sensor Type')
 
@@ -44,11 +44,11 @@ class Sensor():
                 if doorOpen_curr != doorOpen_prev:
                     if doorOpen_curr:  # if the door is currently open
                         for subscriber in subscribers:
-                            context.bot.send_message(subscriber, f'{self.name} is open.')
+                            context.bot.send_message(subscriber, '{self.name} is open.'.format(self.name))
                         doorOpen_prev = True
                     if not doorOpen_curr:
                         for subscriber in subscribers:
-                            context.bot.send_message(subscriber, f'{self.name} is closed.')
+                            context.bot.send_message(subscriber, '{self.name} is closed.'.format(self.name))
                         doorOpen_prev = False
 
                 if self.exit_condition:
@@ -60,7 +60,7 @@ class Sensor():
                 time.sleep(0.1)
                 if GPIO.input(self.pin):
                     for subscriber in subscribers:
-                        context.bot.send_message(subscriber, f'{self.name} detects motion.')
+                        context.bot.send_message(subscriber, '{self.name} detects motion.'.format(self.name))
                     time.sleep(15)
 
                 if self.exit_condition:
