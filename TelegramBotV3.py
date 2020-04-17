@@ -20,13 +20,16 @@ logger = logging.getLogger(__name__)
 def initialize(configFile):
     config = configparser.ConfigParser()
     config.read(configFile)
+    apiToken = config['settings']['apiToken']
+
     for section in config:
         if "sensor" in section:
             name = config[section]['name']
             type = config[section]['type']
             pin = config[section]['pin']
             sensors.append(sensor.Sensor(name, type, int(pin)))
-    return config['settings']['apiToken']
+
+    return apiToken
 
 
 def subscribe(update, context):
@@ -39,11 +42,11 @@ def subscribe(update, context):
 
 
 def unsubscribe(update, context):
-    user_id = update.message.from_user['id']
-    if user_id in subscribers:
+    try:
+        user_id = update.message.from_user['id']
         subscribers.remove(user_id)
         update.message.reply_text('Successfully unsubscribed!')
-    else:
+    except ValueError:
         update.message.reply_text('Error, Subscriber does not exist!')
 
 
@@ -101,10 +104,9 @@ def error_callback(update, context):
         s.exit_condition = True
     time.sleep(10)
     for s in sensors:
-        if s.type == 'contact':
-            s.exit_condition = False
-            t = threading.Thread(target=s.monitor, args=[context, subscribers])
-            t.start()
+        s.exit_condition = False
+        t = threading.Thread(target=s.monitor, args=[context, subscribers])
+        t.start()
     print("Bot restarted!")
     for subscriber in subscribers:
         context.bot.send_message(subscriber, 'Error encountered, bot restarted!')
@@ -138,6 +140,7 @@ def main():
 
     updater.start_polling()
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
